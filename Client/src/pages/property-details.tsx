@@ -14,7 +14,8 @@ import CustomButton from "../components/common/CustomButton";
 import { useDelete, useGetIdentity } from "@refinedev/core";
 import axios from "axios";
 
-function checkImage(url) {
+function checkImage(//@ts-ignore
+url) {
   const img = new Image();
   img.src = url;
   return img.width !== 0 && img.height !== 0;
@@ -46,7 +47,9 @@ const PropertyDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const isCurrentUser = user.email === propertyInfo.creator.email;
+  const isCurrentUser = //@ts-ignore
+  user?.email === propertyInfo?.creator?.email;
+
 
   const handleDeleteProperty = () => {
     const response = window.confirm("Are you sure you want to delete this property?");
@@ -54,6 +57,7 @@ const PropertyDetails = () => {
       mutate(
         {
           resource: "properties",
+          //@ts-ignore
           id: id,
         },
         {
@@ -159,18 +163,20 @@ const PropertyDetails = () => {
               borderRadius={2}
             >
               <Stack mt={2} justifyContent="center" alignItems="center" textAlign="center">
-                <img
-                  src={checkImage(propertyInfo.creator.avatar) ? propertyInfo.creator.avatar : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"}
-                  alt="avatar"
-                  width={90}
-                  height={90}
-                  style={{ borderRadius: "100%", objectFit: "cover" }}
-                />
+              <img
+                src={propertyInfo.creator && checkImage(propertyInfo.creator.avatar) ? propertyInfo.creator.avatar : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"}
+                alt="avatar"
+                width={90}
+                height={90}
+                style={{ borderRadius: "100%", objectFit: "cover" }}
+              />
+
 
                 <Box mt="15px">
-                  <Typography fontSize={18} fontWeight={600} color="#11142D">
-                    {propertyInfo.creator.name}
-                  </Typography>
+                <Typography fontSize={18} fontWeight={600} color="#11142D">
+                  {propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
+              </Typography>
+
                   <Typography mt="5px" fontSize={14} fontWeight={400} color="#808191">
                     Real Estate Agent
                   </Typography>
@@ -184,8 +190,9 @@ const PropertyDetails = () => {
                 </Stack>
 
                 <Typography mt={1} fontSize={16} fontWeight={600} color="#11142D">
-                  {propertyInfo.creator.allProperties.length} Properties
+                  {propertyInfo.creator && propertyInfo.creator.allProperties ? propertyInfo.creator.allProperties.length : 0} Properties
                 </Typography>
+
               </Stack>
 
               {/* Action Buttons */}

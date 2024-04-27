@@ -48,7 +48,9 @@ export const AllProperties = () => {
     }, []);
 
      const currentFilterValues = {
+        // @ts-ignore Ignore type checking for the 'propertyType' field
         title: filters.find(f => f.field === "title")?.value || "",
+        // @ts-ignore Ignore type checking for the 'propertyType' field
         propertyType: filters.find(f => f.field === "propertyType")?.value || "",
     };
 
@@ -77,12 +79,14 @@ export const AllProperties = () => {
                             value={currentFilterValues.title}
                             onChange={(e) => {
                                 setFilters([
+                                    
                                     {
                                         field: "title",
                                         operator: "contains",
                                         value: e.currentTarget.value ? e.currentTarget.value : undefined,
                                     },
-                                    ...filters.filter(f => f.field !== "title")
+                                    ...filters.filter(f => //@ts-ignore
+                                     f.field !== "title")
                                 ]);
                             }}
                         />
