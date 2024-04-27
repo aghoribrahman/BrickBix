@@ -38,7 +38,7 @@ const onFinishHandler = async (data: FieldValues) => {
   if (!propertyImage.name) return alert("Please select an image");
 
   try {
-    const response = await fetch('http://localhost:8080/api/v1/properties', {
+    const response = await fetch('https://refine-dashboard-3gx3.onrender.com/api/v1/properties', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

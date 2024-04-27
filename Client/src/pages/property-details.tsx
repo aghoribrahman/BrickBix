@@ -31,7 +31,7 @@ const PropertyDetails = () => {
     const fetchPropertyDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/properties/${id}`
+          `https://refine-dashboard-3gx3.onrender.com/api/v1/properties/${id}`
         );
         setPropertyInfo(response.data);
       } catch (error) {
