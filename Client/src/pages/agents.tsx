@@ -1,7 +1,7 @@
 import { useList } from "@refinedev/core";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-
+import { CircularProgress } from "@mui/material";
 import AgentCard from "../components/agent/AgentCard";
 
 const Agents = () => {
@@ -9,7 +9,12 @@ const Agents = () => {
 
     const allAgents = data?.data ?? [];
 
-    if (isLoading) return <div>loading...</div>;
+    if (isLoading) 
+        return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <Typography>
+            <CircularProgress />
+        </Typography>
+        </div>;
     if (isError) return <div>error...</div>;
 
     return (

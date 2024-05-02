@@ -205,7 +205,7 @@ function App() {
             <DevtoolsProvider>
              
               <Refine
-                dataProvider={dataProvider("https://refine-dashboard-3gx3.onrender.com/api/v1")}
+                dataProvider={dataProvider("http://localhost:8080/api/v1")}
                 notificationProvider={notificationProvider}
                 routerProvider={routerProvider}
                 authProvider={authProvider}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Add, Sort } from "@mui/icons-material";
 import { useTable } from "@refinedev/core";
 import { Box, Stack, Typography, CircularProgress, MenuItem, Select } from "@mui/material";
@@ -9,10 +9,9 @@ import TextField from "@mui/material/TextField";
 
 export const AllProperties = () => {
     const navigate = useNavigate();
-    const { tableQueryResult: { data, isLoading, isError }, current, setCurrent, setPageSize, pageCount, sorters, setSorters, filters, setFilters } = useTable();
+    const { tableQueryResult: { isLoading, isError }, current, setCurrent, setPageSize, pageCount, sorters, setSorters, filters, setFilters } = useTable();
     const [allProperties, setAllProperties] = useState<any[]>([]);
     const currentPrice = sorters.find((item) => item.field === "price")?.order;
-
     const toggleSort = (field: string) => {
         const newOrder = currentPrice === "asc" ? "desc" : "asc";
         setSorters([{ field, order: newOrder }]);
@@ -33,7 +32,7 @@ export const AllProperties = () => {
     useEffect(() => {
         const fetchProperties = async () => {
             try {
-                const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
+                const response = await fetch("http://localhost:8080/api/v1/properties");
                 if (!response.ok) {
                     throw new Error("Failed to fetch properties");
                 }
@@ -43,19 +42,45 @@ export const AllProperties = () => {
                 console.error("Error fetching properties:", error);
             }
         };
-
-        fetchProperties();
-    }, []);
+    
+        // Check if allProperties is empty before making the API call
+        if (allProperties.length === 0) {
+            fetchProperties();
+        }
+    }, [allProperties]);
 
      const currentFilterValues = {
-        // @ts-ignore Ignore type checking for the 'propertyType' field
-        title: filters.find(f => f.field === "title")?.value || "",
-        // @ts-ignore Ignore type checking for the 'propertyType' field
-        propertyType: filters.find(f => f.field === "propertyType")?.value || "",
+        propertyType: filters.find(f =>// @ts-expect-error
+         f.field === "propertyType")?.value || "",
+        title: filters.find(f => // @ts-expect-error
+        f.field === "title")?.value || "",
     };
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    const filteredProperties = useMemo(() => {
+        return allProperties
+            .filter(property => {
+                // Filter by title
+                const titleFilter = property.title.toLowerCase().includes(currentFilterValues.title.toLowerCase());
+                // Filter by property type
+                const propertyTypeFilter = currentFilterValues.propertyType === "" || property.propertyType.toLowerCase() === currentFilterValues.propertyType.toLowerCase();
+                // Return true if both filters pass
+                return titleFilter && propertyTypeFilter;
+            })
+            .reverse(); // Reverse the filtered array
+    }, [allProperties, currentFilterValues]);
+
+    if (isLoading) 
+    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+    <Typography>
+        <CircularProgress />
+    </Typography>
+    </div>;
+
     if (isError) return <Typography>Error...</Typography>;
+
+    const propertiesPerPage = 20; // Number of properties to display per page
+    const startIndex = (current - 1) * propertiesPerPage;
+    const propertiesToShow = filteredProperties.slice(startIndex, startIndex + propertiesPerPage);
 
     return (
         <Box sx={{ marginBottom: "20px" }}>
@@ -79,48 +104,48 @@ export const AllProperties = () => {
                             value={currentFilterValues.title}
                             onChange={(e) => {
                                 setFilters([
-                                    
                                     {
                                         field: "title",
                                         operator: "contains",
                                         value: e.currentTarget.value ? e.currentTarget.value : undefined,
                                     },
-                                    ...filters.filter(f => //@ts-ignore
-                                     f.field !== "title")
+                                    ...filters.filter(f => 
+                                        // @ts-expect-error
+                                        f.field !== "title")
                                 ]);
                             }}
                         />
                        <Select
-                                variant="outlined"
-                                color="info"
-                                displayEmpty
-                                required
-                                inputProps={{ "aria-label": "Without label" }}
-                                defaultValue=""
-                                value={currentFilterValues.propertyType}
-                                onChange={(e) => {
-                                    setFilters(
-                                        [
-                                            {
-                                                field: "propertyType",
-                                                operator: "eq",
-                                                value: e.target.value,
-                                            },
-                                        ],
-                                        "replace",
-                                    );
-                                }}
+                        variant="outlined"
+                        color="info"
+                        displayEmpty
+                        required
+                        inputProps={{ "aria-label": "Without label" }}
+                        defaultValue=""
+                        value={currentFilterValues.propertyType}
+                        onChange={(e) => {
+                            setFilters(
+                                    [
+                                    {
+                                        field: "propertyType",
+                                        operator: "eq",
+                                        value: e.target.value,
+                                    },
+                                    ],
+                                    "replace"
+                                );
+                        }}
+                    >
+                        <MenuItem value="">All</MenuItem>
+                        {["Apartment", "Rental", "Farmhouse", "Commercial", "Land", "Duplex", "Plot", "Room"].map((type) => (
+                            <MenuItem
+                                key={type}
+                                value={type.toLowerCase()}
                             >
-                                <MenuItem value="">All</MenuItem>
-                                {["Apartment", "Rental", "Farmhouse", "Commercial", "Land", "Duplex", "Plot", "Room"].map((type) => (
-                                    <MenuItem
-                                        key={type}
-                                        value={type.toLowerCase()}
-                                    >
-                                        {type}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                                {type}
+                            </MenuItem>
+                        ))}
+                    </Select>
                     </Box>
                 </Box>
             </Stack>
@@ -135,21 +160,18 @@ export const AllProperties = () => {
             </Stack>
 
             <Box mt="20px" sx={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "center", justifyItems: "center", justifyContent: "center" }}>
-    {allProperties
-        .filter(property => property.title.toLowerCase().includes(currentFilterValues.title.toLowerCase()))
-        .reverse() // Reverse the filtered array
-        .map((property) => (
-            <PropertyCard
-                key={property._id}
-                id={property._id}
-                title={property.title}
-                location={property.location}
-                price={property.price}
-                photo={property.photo}
-                propertyType={property.propertyType}
-            />
-        ))}
-</Box>
+                {propertiesToShow.map((property) => (
+                    <PropertyCard
+                        key={property._id}
+                        id={property._id}
+                        title={property.title}
+                        location={property.location}
+                        price={property.price}
+                        photo={property.photo}
+                        propertyType={property.propertyType}
+                    />
+                ))}
+            </Box>
 
             {allProperties.length > 0 && (
                 <Box display="flex" gap={2} mt={3} flexWrap="wrap" >

@@ -26,13 +26,13 @@ const PropertyDetails = () => {
   const { data: user } = useGetIdentity();
   const { mutate } = useDelete();
   const { id } = useParams();
-  const [propertyInfo, setPropertyInfo] = useState<any | null>(null);
+  const [propertyInfo, setPropertyInfo] = useState(null);
 
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
         const response = await axios.get(
-          `https://refine-dashboard-3gx3.onrender.com/api/v1/properties/${id}`
+          `http://localhost:8080/api/v1/properties/${id}`
         );
         setPropertyInfo(response.data);
       } catch (error) {
@@ -47,9 +47,9 @@ const PropertyDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const isCurrentUser = //@ts-ignore
-  user?.email === propertyInfo?.creator?.email;
-
+  const isCurrentUser =
+  //@ts-ignore
+   user?.email === propertyInfo?.creator?.email;
 
   const handleDeleteProperty = () => {
     const response = window.confirm("Are you sure you want to delete this property?");
@@ -81,18 +81,20 @@ const PropertyDetails = () => {
           <Box maxWidth={764}>
             {/* Property Image */}
             <img
+              //@ts-ignore
               src={propertyInfo.photo}
               alt="property_details-img"
-              height={546}
-              style={{ objectFit: "cover", borderRadius: "10px", width: "100%" }}
+              style={{ borderRadius: "10px", width: "100%", maxHeight: "330px" }}
               className="property_details-img"
             />
+
 
             <Box mt="15px">
               {/* Property Type and Rating */}
               <Stack direction="row" justifyContent="space-between" flexWrap="wrap" alignItems="center">
                 <Typography fontSize={18} fontWeight={500} color="#11142D" textTransform="capitalize">
-                  {propertyInfo.propertyType}
+                  {//@ts-ignore
+                  propertyInfo.propertyType}
                 </Typography>
                 <Box>
                   {[1, 2, 3, 4, 5].map((item) => (
@@ -111,12 +113,14 @@ const PropertyDetails = () => {
               >
                 <Box>
                   <Typography fontSize={22} fontWeight={600} mt="10px" color="#11142D">
-                    {propertyInfo.title}
+                    {//@ts-ignore
+                    propertyInfo.title}
                   </Typography>
                   <Stack mt={0.5} direction="row" alignItems="center" gap={0.5}>
                     <Place sx={{ color: "#808191" }} />
                     <Typography fontSize={14} color="#808191">
-                      {propertyInfo.location}
+                      {//@ts-ignore
+                      propertyInfo.location}
                     </Typography>
                   </Stack>
                 </Box>
@@ -127,7 +131,8 @@ const PropertyDetails = () => {
                   </Typography>
                   <Stack direction="row" alignItems="flex-end" gap={1}>
                     <Typography fontSize={25} fontWeight={700} color="#475BE8">
-                    ₹ {propertyInfo.price}
+                      ₹ {//@ts-ignore
+                      propertyInfo.price}
                     </Typography>
                     <Typography fontSize={14} color="#808191" mb={0.5}>
                       /-
@@ -142,7 +147,8 @@ const PropertyDetails = () => {
                   Description
                 </Typography>
                 <Typography fontSize={14} color="#808191">
-                  {propertyInfo.description}
+                  {//@ts-ignore
+                  propertyInfo.description}
                 </Typography>
               </Stack>
             </Box>
@@ -163,19 +169,24 @@ const PropertyDetails = () => {
               borderRadius={2}
             >
               <Stack mt={2} justifyContent="center" alignItems="center" textAlign="center">
-              <img
-                src={propertyInfo.creator && checkImage(propertyInfo.creator.avatar) ? propertyInfo.creator.avatar : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"}
-                alt="avatar"
-                width={90}
-                height={90}
-                style={{ borderRadius: "100%", objectFit: "cover" }}
-              />
-
+                <img
+                  src={//@ts-ignore
+                    propertyInfo.creator && checkImage(propertyInfo.creator.avatar)//@ts-ignore
+                      ? propertyInfo.creator.avatar
+                      : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
+                  }
+                  alt="avatar"
+                  width={90}
+                  height={90}
+                  style={{ borderRadius: "100%", objectFit: "cover" }}
+                />
 
                 <Box mt="15px">
-                <Typography fontSize={18} fontWeight={600} color="#11142D">
-                  {propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
-              </Typography>
+                  <Typography fontSize={18} fontWeight={600} color="#11142D">
+                    {
+                    //@ts-ignore
+                    propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
+                  </Typography>
 
                   <Typography mt="5px" fontSize={14} fontWeight={400} color="#808191">
                     Real Estate Agent
@@ -190,9 +201,9 @@ const PropertyDetails = () => {
                 </Stack>
 
                 <Typography mt={1} fontSize={16} fontWeight={600} color="#11142D">
-                  {propertyInfo.creator && propertyInfo.creator.allProperties ? propertyInfo.creator.allProperties.length : 0} Properties
+                  {//@ts-ignore
+                  propertyInfo.creator && propertyInfo.creator.allProperties ? propertyInfo.creator.allProperties.length : 0} Properties
                 </Typography>
-
               </Stack>
 
               {/* Action Buttons */}
@@ -205,7 +216,8 @@ const PropertyDetails = () => {
                   icon={!isCurrentUser ? <ChatBubble /> : <Edit />}
                   handleClick={() => {
                     if (isCurrentUser) {
-                      navigate(`/properties/edit/${propertyInfo._id}`);
+                      navigate(`/properties/edit/${//@ts-ignore
+                        propertyInfo._id}`);
                     }
                   }}
                 />

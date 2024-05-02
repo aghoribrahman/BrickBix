@@ -18,7 +18,7 @@ const PropertyCard = ({
   propertyType,
 }: PropertyCardProps) => {
   return (
-  
+    
     <Card
       component={Link}
       to={`/properties/show/${id}`}
@@ -28,7 +28,7 @@ const PropertyCard = ({
        textDecoration: 'none',
        backgroundColor: '#f2f2f2',
        borderRadius:'10px'
-      }}
+    }}
       elevation={0}
     >
       <CardMedia

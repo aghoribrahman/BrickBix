@@ -12,6 +12,7 @@ import  PieChart  from '../components/charts/PieChart';
 import  PropertyReferrals  from '../components/charts/PropertyReferrals';
 import  TotalRevenue  from '../components/charts/TotalRevenue';
 import PropertyCard from "../components/common/PropertyCard";
+import { AllProperties } from "./all-properties";
 
 
 const Home = () => {
@@ -21,11 +22,11 @@ const Home = () => {
   });
   const userId = user?.id;
   const [myProperties, setMyProperties] = useState<any[]>([]);
-  
+
   useEffect(() => {
     const fetchProperties = async () => {
         try {
-            const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
+            const response = await fetch("http://localhost:8080/api/v1/properties");
             if (!response.ok) {
                 throw new Error("Failed to fetch properties");
             }
@@ -59,6 +60,8 @@ const Home = () => {
         padding="20px"
         bgcolor="#fcfcfc"
         display="flex"
+        justifyContent="center" 
+        alignItems="center"
         flexDirection="column"
         minWidth="100%"
         mt="25px"
@@ -67,28 +70,29 @@ const Home = () => {
           Latest Properties 
         </Typography>
         <Box
-                    mt={2.5}
-                    sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}
-                >
-                    {myProperties.slice(0, 5).map((property) => (
-                        <PropertyCard
-                            key={property._id}
-                            id={property._id}
-                            title={property.title}
-                            location={property.location}
-                            price={property.price}
-                            photo={property.photo}
-                            propertyType=""
-                        />
-                    ))}
-                </Box>
+    mt={2.5}
+    sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 4 }} 
+>
+    {myProperties.slice().reverse().slice(0, 5).map((property) => (
+        <PropertyCard
+            key={property._id}
+            id={property._id}
+            title={property.title}
+            location={property.location}
+            price={property.price}
+            photo={property.photo}
+            propertyType={property.propertyType}
+        />
+    ))}
+</Box>
+
       </Box>
        
 
       <Box mt="20px" display="flex" flexWrap="wrap" gap={4}>
         <PieChart
-          title="Properties for Sale"
-          value={684}
+          title="Properties for Listed"
+          value={myProperties.length}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}
         />

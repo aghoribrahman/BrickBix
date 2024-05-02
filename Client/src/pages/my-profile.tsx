@@ -1,6 +1,7 @@
 import { useGetIdentity, useOne } from "@refinedev/core";
 import Profile from "../components/common/Profile";
 import { useActiveAuthProvider } from "@refinedev/core";
+import { CircularProgress } from "@mui/material";
 
 const MyProfile = () => {
   const authProvider = useActiveAuthProvider();
@@ -14,7 +15,10 @@ const MyProfile = () => {
 
   const myProfile = data?.data ?? {};
 
-  if (isLoading) return <div>loading...</div>;
+  if (isLoading) 
+    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}> 
+              <CircularProgress />
+          </div>;
   if (isError) return <div>error...</div>;
 
   // Check if myProfile is an object with the name property
