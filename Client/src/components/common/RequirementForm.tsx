@@ -7,22 +7,19 @@ import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Stack from "@mui/material/Stack";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import { Upload as UploadImage } from "@mui/icons-material";
-import { FormProps } from "../../interfaces/common";
+import { RequirementFormProps } from "../../interfaces/common";
 import CustomButton from "./CustomButton";
-{/*import { Form as Form1, Input, Upload } from "antd";*/}
 
 import { useState } from "react";
   
-const Form = ({
+const RequirementForm = ({
   type,
   register,
   handleSubmit,
-  handleImageChange,
   formLoading,
   onFinishHandler,
-}: FormProps) => {
+}: RequirementFormProps) => {
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const handleClick = () => {
@@ -33,13 +30,11 @@ const Form = ({
       // For example, make an API call, perform validation, etc.
       // Once the action is completed, you can re-enable the button if needed
   };
-
-
   return (
     
     <Box>
       <Typography fontSize={25} fontWeight={700} color="#11142d">
-        {type} a Property 
+        {type} a Requirement
       </Typography>
 
       <Box mt={2.5} borderRadius="15px" padding="20px" bgcolor="#fcfcfc">
@@ -62,7 +57,7 @@ const Form = ({
                 color: "#11142d",
               }}
             >
-              Enter property name
+              Enter Requirement
             </FormHelperText>
             <TextField
               fullWidth
@@ -82,7 +77,7 @@ const Form = ({
                 color: "#11142d",
               }}
             >
-              Enter Description
+              Enter Description & Your Contact Information
             </FormHelperText>
             <TextareaAutosize
               minRows={5}
@@ -112,7 +107,7 @@ const Form = ({
                   color: "#11142d",
                 }}
               >
-                Select Property Type
+                Select Requirement Type
               </FormHelperText>
               <Select
                 variant="outlined"
@@ -145,7 +140,7 @@ const Form = ({
                   color: "#11142d",
                 }}
               >
-                Enter property price
+                Asked Price
               </FormHelperText>
               <TextField
                 fullWidth
@@ -154,7 +149,7 @@ const Form = ({
                 color="info"
                 type="number"
                 variant="outlined"
-                {...register("price", { required: true })}
+                {...register("askedPrice", { required: true })}
               />
             </FormControl>
           </Stack>
@@ -212,4 +207,4 @@ const Form = ({
   );
 };
 
-export default Form;
+export default RequirementForm;

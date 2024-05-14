@@ -63,25 +63,6 @@ const getPropertyDetail = async (req, res) => {
   }
 };
 
-const getPropertiesByCreator = async (req, res) => {
-  const { userId } = req.params; // Assuming userId is sent from frontend
-  
-  try {
-    // Find properties where the creator field matches the userId
-    const properties = await User.find({ creator: userId });
-
-    if (properties> 0) {
-      res.status(200).json(properties);
-    } else {
-      res.status(404).json({ message: `No properties found for the user${userId}` });
-    }
-  } catch (error) {
-    console.error("Error fetching properties:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-
 
 const createProperty = async (req, res) => {
   try {
@@ -182,5 +163,4 @@ export {
   createProperty,
   updateProperty,
   deleteProperty,
-  getPropertiesByCreator,
 };

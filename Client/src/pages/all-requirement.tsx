@@ -1,54 +1,37 @@
-import { useEffect, useState, useMemo } from "react";
-import { Add, Sort } from "@mui/icons-material";
-import { useTable } from "@refinedev/core";
-import { Box, Stack, Typography, CircularProgress, MenuItem, Select } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import PropertyCard from "../components/common/PropertyCard";
-import CustomButton from "../components/common/CustomButton";
-import TextField from "@mui/material/TextField";
+import React, { useEffect, useState, useMemo } from 'react'
+import Typography from "@mui/material/Typography";
+import { Box, CircularProgress, Stack } from "@mui/material";
+import CustomButton from '../components/common/CustomButton';
+import { TextField, Select, MenuItem  } from '@mui/material';
+import { Sort, Add } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useTable } from '@refinedev/core';
+import PropertyCard from '../components/common/PropertyCard';
+import BrickBixImage from '../assets/brick bix image.jpg';
 
-
-export const AllProperties = () => {
+const Requirement = () => {
     const navigate = useNavigate();
-        const { tableQueryResult: { data, isLoading, isError }, 
-        current, 
-        setCurrent, 
-        setPageSize, 
-        pageCount, 
-        sorters, 
-        setSorters, 
-        filters, 
-        setFilters } = useTable({   
-                resource: "properties",});
-
-        
-                
-    const [allProperties, setAllProperties] = useState<any[]>([]);
-    const currentPrice = sorters.find((item) => item.field === "price")?.order;
+    const { tableQueryResult: { data, isLoading, isError }, 
+    current, 
+    setCurrent, 
+    setPageSize, 
+    pageCount, 
+    sorters, 
+    setSorters, 
+    filters, 
+    setFilters } = useTable({   
+            resource: "requirement",});
+    
+            
+    // const allRequirement = data?.data ?? [];
+    
+    const [allRequirement, setAllRequirement] = useState<any[]>([]);
+    const currentPrice = sorters.find((item) => item.field === "askedPrice")?.order;
     const toggleSort = (field: string) => {
         const newOrder = currentPrice === "asc" ? "desc" : "asc";
         setSorters([{ field, order: newOrder }]);
-        sortProperties(allProperties, field, newOrder);
+        sortProperties(allRequirement, field, newOrder);
     };
-    const propertyValues = data?.data ?? [];
-
-    function checkURLValue(url: string): string {
-        // Split the URL by '/' to get the last segment
-        const urlSegments = url.split('/');
-        // Get the last segment of the URL
-        const lastSegment = urlSegments[urlSegments.length - 1];
-        
-        // Check if the last segment is 'allProperties'
-        if (lastSegment === 'requirememnt') {
-            return 'properties-requirement';
-        } else {
-            return 'properties';
-        }
-    }
-    
-    const fullUrl = window.location.href
-    const fullUrlValue = checkURLValue(fullUrl)
-    
 
     const sortProperties = (properties: any[], field: string, order: string) => {
         const sortedProperties = [...properties].sort((a, b) => {
@@ -58,38 +41,58 @@ export const AllProperties = () => {
                 return b[field] - a[field];
             }
         });
-        setAllProperties(sortedProperties);
+        setAllRequirement(sortedProperties);
     };
 
+    function checkURLValue(url: string): string {
+        // Split the URL by '/' to get the last segment
+        const urlSegments = url.split('/');
+        // Get the last segment of the URL
+        const lastSegment = urlSegments[urlSegments.length - 1];
+        
+        // Check if the last segment is 'allRequirement'
+        if (lastSegment.includes('requirement')) {
+            return 'properties-requirement';
+        } else {
+            return 'properties';
+        }
+    }
+    
+    const fullUrl = window.location.href
+    const fullUrlValue = checkURLValue(fullUrl)
+
+
     useEffect(() => {
-        const fetchProperties = async () => {
+        const fetchRequirements = async () => {
             try {
-                const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
+                const response = await fetch('https://refine-dashboard-3gx3.onrender.com/api/v1/requirement');
                 if (!response.ok) {
-                    throw new Error("Failed to fetch properties");
+                    throw new Error('Failed to fetch requirements');
                 }
                 const data = await response.json();
-                setAllProperties(data);
+                setAllRequirement(data.requirements);
             } catch (error) {
-                console.error("Error fetching properties:", error);
+                console.error('Error fetching requirements:', error);
             }
         };
     
-        // Check if allProperties is empty before making the API call
-        if (allProperties.length === 0) {
-            fetchProperties();
+        // Check if allRequirement is empty before making the API call
+        if (allRequirement.length === 0) {
+            fetchRequirements();
         }
-    }, [allProperties]);
-    
-     const currentFilterValues = {
+    }, [allRequirement]);
+
+    const currentFilterValues = {
         propertyType: filters.find(f =>// @ts-expect-error
          f.field === "propertyType")?.value || "",
         title: filters.find(f => // @ts-expect-error
         f.field === "title")?.value || "",
     };
+            
+    console.log(currentFilterValues)
 
     const filteredProperties = useMemo(() => {
-        return allProperties
+        return allRequirement
             .filter(property => {
                 // Filter by title
                 const titleFilter = property.title.toLowerCase().includes(currentFilterValues.title.toLowerCase());
@@ -99,32 +102,39 @@ export const AllProperties = () => {
                 return titleFilter && propertyTypeFilter;
             })
             .reverse(); // Reverse the filtered array
-    }, [allProperties, currentFilterValues]);
+    }, [allRequirement, currentFilterValues]);
+
+
+   
 
     if (isLoading) 
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-    <Typography>
-        <CircularProgress />
-    </Typography>
-    </div>;
+        return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <Typography>
+            <CircularProgress />
+        </Typography>
+        </div>;
 
+
+    
     if (isError) return <Typography>Error...</Typography>;
 
-    const propertiesPerPage = 20; // Number of properties to display per page
-    const startIndex = (current - 1) * propertiesPerPage;
-    const propertiesToShow = filteredProperties.slice(startIndex, startIndex + propertiesPerPage);
-
-    return (
-        <Box sx={{ marginBottom: "20px" }}>
+    
+const propertiesPerPage = 20; // Number of properties to display per page
+const startIndex = (current - 1) * propertiesPerPage;
+const propertiesToShow = filteredProperties.slice(startIndex, startIndex + propertiesPerPage);
+console.log(propertiesToShow)
+  return (
+<Box sx={{ marginBottom: "20px" }}>
             <Stack direction='column' width='100%'>
                 <Typography fontSize={{ xs: 20, sm: 25 }} fontWeight={700} color="#11142d" mb={{ xs: 2, sm: 0 }}>
-                    {!allProperties.length ? 'There are no properties' : 'All Properties'}
+                {// @ts-ignore
+                !allRequirement.length ? 'There are no requirement' : 'All Requirements'}
                 </Typography>
                 <Box mb={2} mt={3} display='flex' width='84%' justifyContent='space-between'>
                     <Box display='flex' gap={2} flexWrap='wrap' mb={{ xs: '20px', sm: '0px' }}>
-                        <CustomButton
+                    <CustomButton
                             title={`Sort price ${currentPrice === "asc" ? "↑" : "↓"}`}
-                            handleClick={() => toggleSort("price")}
+                            handleClick={() => toggleSort("askedPrice")}
                             backgroundColor="#475be8"
                             color="#fcfcfc"
                             icon={<Sort />}
@@ -147,6 +157,7 @@ export const AllProperties = () => {
                                 ]);
                             }}
                         />
+
                        <Select
                         variant="outlined"
                         color="info"
@@ -154,7 +165,7 @@ export const AllProperties = () => {
                         required
                         inputProps={{ "aria-label": "Without label" }}
                         defaultValue=""
-                        value={currentFilterValues.propertyType}
+                        value='{(currentFilterValues.propertyType)}'
                         onChange={(e) => {
                             setFilters(
                                     [
@@ -184,29 +195,31 @@ export const AllProperties = () => {
             <Stack direction={{ xs: 'column', sm: 'column' }} justifyContent="space-between" alignItems="center" spacing={2}>
                 <CustomButton
                     title="Add Property"
-                    handleClick={() => navigate("/allProperties/properties/create")}
+                    handleClick={() => navigate("properties-requirement/create")}
                     backgroundColor="#475be8"
                     color="#fcfcfc"
                     icon={<Add />}
                 />
             </Stack>
 
-            <Box mt="20px" sx={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "center", justifyItems: "center", justifyContent: "center" }}>
-                {propertiesToShow.map((property) => (
+            {<Box mt="20px" sx={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "center", justifyItems: "center", justifyContent: "center" }}>
+            {// @ts-ignore
+            propertiesToShow.map((property) => (
                     <PropertyCard
                         key={property._id}
                         id={property._id}
                         title={property.title}
                         location={property.location}
-                        price={property.price}
-                        photo={property.photo}
+                        price={property.askedPrice}
+                        photo={BrickBixImage}
                         propertyType={property.propertyType}
                         url = {fullUrlValue}
                     />
                 ))}
             </Box>
-
-            {allProperties.length > 0 && (
+}
+            {// @ts-ignore
+            allRequirement.length > 0 && (
                 <Box display="flex" gap={2} mt={3} flexWrap="wrap" >
                     <CustomButton
                         title="Previous"
@@ -251,5 +264,8 @@ export const AllProperties = () => {
                 </Box>
             )}
         </Box>
-    );
-};
+
+);
+}
+
+export default Requirement

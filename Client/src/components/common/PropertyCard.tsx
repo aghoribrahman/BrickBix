@@ -16,12 +16,18 @@ const PropertyCard = ({
   price,
   photo,
   propertyType,
+  url,
 }: PropertyCardProps) => {
+
+  
+
+  
+
   return (
     
     <Card
       component={Link}
-      to={`/properties/show/${id}`}
+      to={`/${url}/show/${id}`}
       sx={{
         maxWidth: "330px",
         cursor: "pointer",
@@ -77,7 +83,7 @@ const PropertyCard = ({
         >
           
           <Typography fontSize={14} fontWeight={600} color="#475be8">
-             ₹ {price}/-
+             ₹ {new Intl.NumberFormat('en-IN').format(parseFloat(price))}/-
           </Typography>
           <Typography fontSize={14} fontWeight={600}>
              {propertyType}

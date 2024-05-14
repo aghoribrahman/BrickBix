@@ -12,7 +12,7 @@ import  PieChart  from '../components/charts/PieChart';
 import  PropertyReferrals  from '../components/charts/PropertyReferrals';
 import  TotalRevenue  from '../components/charts/TotalRevenue';
 import PropertyCard from "../components/common/PropertyCard";
-import { AllProperties } from "./all-properties";
+
 
 
 const Home = () => {
@@ -26,7 +26,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProperties = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/v1/properties");
+            const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
             if (!response.ok) {
                 throw new Error("Failed to fetch properties");
             }
@@ -38,11 +38,8 @@ const Home = () => {
     };
 
     fetchProperties();
-}, []);
+}, [myProperties]);
 
-  console.log(myProperties);
-
-  
   return (
     <Box>
       <Typography sx={{margin:'10px'}} fontSize={15} fontWeight={700} color="#11142D">
@@ -82,6 +79,7 @@ const Home = () => {
             price={property.price}
             photo={property.photo}
             propertyType={property.propertyType}
+            url={"properties"}
         />
     ))}
 </Box>
@@ -91,7 +89,7 @@ const Home = () => {
 
       <Box mt="20px" display="flex" flexWrap="wrap" gap={4}>
         <PieChart
-          title="Properties for Listed"
+          title="Properties Listed"
           value={myProperties.length}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}
@@ -103,13 +101,13 @@ const Home = () => {
           colors={["#275be8", "#c4e8ef"]}
         />
         <PieChart
-          title="Total customers"
+          title="Commercial Properties"
           value={5684}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}
         />
         <PieChart
-          title="Properties for Cities"
+          title="Plot For Sell"
           value={555}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}

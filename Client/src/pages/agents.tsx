@@ -22,8 +22,7 @@ const Agents = () => {
             <Typography fontSize={25} fontWeight={700} color="#11142d">
                 Agents List
             </Typography>
-
-            <Box
+            {/*<Box
                 mt="20px"
                 sx={{
                     display: "flex",
@@ -42,7 +41,7 @@ const Agents = () => {
                         noOfProperties={agent.allProperties.length}
                     />
                 ))}
-            </Box>
+            </Box>*/}
         </Box>
     );
 };

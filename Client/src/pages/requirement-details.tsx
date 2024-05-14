@@ -23,30 +23,25 @@ url) {
 }
 
 
-const PropertyDetails = () => {
+const RequirementDetails = () => {
   const navigate = useNavigate();
   const { data: user } = useGetIdentity();
   const { mutate } = useDelete();
   const { id } = useParams();
   const [propertyInfo, setPropertyInfo] = useState(null);
+  
 
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
-        // Determine the API endpoint based on the URL
-        const endpoint = `https://refine-dashboard-3gx3.onrender.com/api/v1/properties/${id}`;
-  
+        // Construct the API endpoint URL based on the id parameter
+        const endpoint = `https://refine-dashboard-3gx3.onrender.com/api/v1/requirement/${id}`;
+        
         // Make the API call
         const response = await axios.get(endpoint);
-  
-        // Check if response data includes 'requirements'
-        if ('requirements' in response.data) {
-          // If 'requirements' exist, set propertyInfo to response.data.requirements
-          setPropertyInfo(response.data.requirements);
-        } else {
-          // If 'requirements' do not exist, set propertyInfo to response.data
-          setPropertyInfo(response.data);
-        }
+        
+        // Set propertyInfo to the response data
+        setPropertyInfo(response.data);
       } catch (error) {
         console.error("Error fetching property details:", error);
       }
@@ -54,7 +49,7 @@ const PropertyDetails = () => {
   
     fetchPropertyDetails();
   }, [id]);
-  console.log(propertyInfo)
+  
   
 
   if (!propertyInfo) {
@@ -70,13 +65,13 @@ const PropertyDetails = () => {
     if (response) {
       mutate(
         {
-          resource: "properties",
+          resource: "requirement",
           //@ts-ignore
           id: id,
         },
         {
           onSuccess: () => {
-            navigate("/allProperties");
+            navigate("/requirement");
           },
         }
       );
@@ -96,7 +91,7 @@ const PropertyDetails = () => {
             {/* Property Image */}
             <img
               //@ts-ignore
-              src={propertyInfo.photo}
+              src={propertyInfo.photo || BrickBix}
               alt="property_details-img"
               style={{ borderRadius: "10px", width: "100%", maxHeight: "330px" }}
               className="property_details-img"
@@ -146,7 +141,7 @@ const PropertyDetails = () => {
                   <Stack direction="row" alignItems="flex-end" gap={1}>
                   <Typography fontSize={14} fontWeight={600} color="#475be8">
                     ₹ {new Intl.NumberFormat('en-IN').format(parseFloat(//@ts-ignore
-                      propertyInfo.price))}/-
+                      propertyInfo.askedPrice))}/-
                   </Typography>
                     
                    
@@ -215,7 +210,7 @@ const PropertyDetails = () => {
 
                 <Typography mt={1} fontSize={16} fontWeight={600} color="#11142D">
                   {//@ts-ignore
-                  propertyInfo.creator && propertyInfo.creator.allProperties ? propertyInfo.creator.allProperties.length : 0} Properties
+                  propertyInfo.creator && propertyInfo.creator.allRequirement ? propertyInfo.creator.allRequirement.length : 0} Properties
                 </Typography>
               </Stack>
 
@@ -229,7 +224,7 @@ const PropertyDetails = () => {
                   icon={!isCurrentUser ? <ChatBubble /> : <Edit />}
                   handleClick={() => {
                     if (isCurrentUser) {
-                      navigate(`/allProperties/properties/edit/${//@ts-ignore
+                      navigate(`/requirement/properties-requirement/edit/${//@ts-ignore
                         propertyInfo._id}`);
                     }
                   }}
@@ -268,4 +263,4 @@ const PropertyDetails = () => {
   );
 };
 
-export default PropertyDetails;
+export default RequirementDetails;

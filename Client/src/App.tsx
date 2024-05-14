@@ -7,7 +7,6 @@ import { DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AccountCircleOutlined,
-        ChatBubbleOutline,
         PeopleAltOutlined,
         StarBorderOutlined,
         VillaOutlined,
@@ -36,31 +35,22 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Header } from "./components/layout/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { CredentialResponse } from "./interfaces/google";
-import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "./pages/blog-posts";
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "./pages/categories";
 import { 
   Login, } from "./pages/login";
 import { parseJwt } from "./utils/parse-jwt";
 import  Home  from './pages/home';
 import { AllProperties } from "./pages/all-properties";
-import Requirement from "./pages/requirement";
+import Requirement from "./pages/all-requirement";
 import  MyProfile  from "./pages/my-profile";
 import { CreateProperty } from "./pages/create-property";
-import { EditProperty } from "./pages/edit-property";
+import EditProperty from "./pages/edit-property";
 import  PropertyDetails  from "./pages/property-details";
-import { AgentProfile } from "./pages/agent-profile";
+import { ExclusiveProperties } from "./pages/exclusive-properties";
 import routerProvider from "@refinedev/react-router-v6";
-
+import Agents from "./pages/agents";
+import { CreateRequirement } from "./pages/create-requirement";
+import EditRequirement from "./pages/edit-requirement";
+import RequirementDetails from "./pages/requirement-details";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
@@ -205,7 +195,8 @@ function App() {
             <DevtoolsProvider>
              
               <Refine
-                dataProvider={dataProvider("http://localhost:8080/api/v1")}
+        
+                dataProvider={dataProvider("https://refine-dashboard-3gx3.onrender.com/api/v1")}
                 notificationProvider={notificationProvider}
                 routerProvider={routerProvider}
                 authProvider={authProvider}
@@ -234,9 +225,9 @@ function App() {
                   },
                   
                   {
-                    name: "message",
-                    list: "/message",
-                    icon: <ChatBubbleOutline />,
+                    name: "Exclusive Property",
+                    list: "/exclusive",
+                    icon: <StarBorderOutlined />,
                   },
                   {
                     name: "my-profile",
@@ -262,7 +253,11 @@ function App() {
                         fallback={<CatchAllNavigate to="/login" />}
                       >    
                       <ThemeProvider theme={theme}>                  
-                        <ThemedLayoutV2 Header={() => <Header sticky />} Sider={()=><Sider />}>
+                        <ThemedLayoutV2 Title={() => (
+                              <div>
+                                  <span>Custom Title</span>
+                              </div>
+                          )} Header={() => <Header sticky />} Sider={()=><Sider />} >
                           <Outlet />
                         </ThemedLayoutV2>
                         </ThemeProvider> 
@@ -274,33 +269,23 @@ function App() {
                     <Route path="/allProperties">
                       <Route index element={<AllProperties />} />
                       <Route path="properties/create" element={<CreateProperty />} />
-                      <Route path="properties/edit/:id" element={<EditProperty />} />
-                      <Route index path="properties/show/:id" element={<PropertyDetails />} />
+                      <Route index path="properties/edit/:id" element={<EditProperty />} />
                     </Route>
                     <Route index path="properties/show/:id" element={<PropertyDetails />} />
                     <Route path="/requirement">
                       <Route index element={<Requirement />} />
+                      <Route path="properties-requirement/create" element={<CreateRequirement />} />
+                      <Route index path="properties-requirement/edit/:id" element={<EditRequirement />} />
                     </Route>
+                    <Route index path="properties-requirement/show/:id" element={<RequirementDetails />} />
                     <Route path="/agent">
-                      <Route index element={<AgentProfile/>} />
+                      <Route index element={<Agents/>} />
                     </Route>
-                    <Route path="/message">
-                      <Route index element={<AgentProfile/>} />
+                    <Route path="/exclusive">
+                      <Route index element={<ExclusiveProperties/>} />
                     </Route>
                     <Route path="/my-profile">
                       <Route index element={<MyProfile />} />
-                    </Route>
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
-                    </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

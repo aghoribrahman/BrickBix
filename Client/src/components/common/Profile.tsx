@@ -7,14 +7,32 @@ import Typography from "@mui/material/Typography";
 
 import { ProfileProps, PropertyProps } from "../../interfaces/common";
 import PropertyCard from "./PropertyCard";
+import Requirement from "../../pages/all-requirement";
 
 function checkImage(url: any) {
   const img = new Image();
   img.src = url;
   return img.width !== 0 && img.height !== 0;
 }
+function checkURLValue(url: string): string {
+    // Split the URL by '/' to get the last segment
+    const urlSegments = url.split('/');
+    // Get the last segment of the URL
+    const lastSegment = urlSegments[urlSegments.length - 1];
+       
+    // Check if the last segment is 'allProperties'
+    if (lastSegment.includes('requirement')) {
+        return 'properties-requirement';
+    } else {
+        return 'properties';
+    }
+}
 
-const Profile = ({ type, name, avatar, email, properties }: ProfileProps) => (
+const fullUrl = window.location.href
+const fullUrlValue = checkURLValue(fullUrl)
+
+
+const Profile = ({ type, name, avatar, email, properties, requirements }: ProfileProps) => (
   <Box>
       <Typography fontSize={25} fontWeight={700} color="#11142D">
           {type} Profile
@@ -189,7 +207,9 @@ const Profile = ({ type, name, avatar, email, properties }: ProfileProps) => (
                           location={property.location}
                           price={property.price}
                           photo={property.photo}
-                          propertyType=''
+                          //@ts-ignore
+                          propertyType={property.propertyType}
+                          url ={fullUrlValue}
                       />
                   ))}
               </Box>

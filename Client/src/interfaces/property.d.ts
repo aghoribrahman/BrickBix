@@ -20,4 +20,5 @@ export interface PropertyCardProps {
   price: string;
   photo: string;
   propertyType: string;
+  url: string;
 }

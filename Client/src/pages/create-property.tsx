@@ -7,6 +7,7 @@ import { useForm } from '@refinedev/react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/common/Form';
 import { FieldValues } from "react-hook-form";
+import { useParams } from 'react-router-dom';
 
 export const CreateProperty = () => {
   const navigate = useNavigate();
@@ -14,12 +15,20 @@ export const CreateProperty = () => {
   const { data: user } = useGetIdentity({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
+
+  const { id } = useParams();
   const [propertyImage, setPropertyImage] = useState( {name:'', url:''} );
   const {
     refineCore: { onFinish, formLoading },
     register,
     handleSubmit,
-} = useForm();
+} = useForm({
+  refineCoreProps: {
+      action: "create",
+      resource: "properties",
+      id: id,
+  },
+});
 
   const handleImageChange = (file: File) => {
     const reader = (readFile: File) =>
@@ -37,31 +46,11 @@ export const CreateProperty = () => {
 const onFinishHandler = async (data: FieldValues) => {
   if (!propertyImage.name) return alert("Please select an image");
 
-  try {
-    const response = await fetch('http://localhost:8080/api/v1/properties', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Include any additional headers if required
-      },
-      body: JSON.stringify({
-        ...data,
-        photo: propertyImage.url,
-        email: user?.email,
-      }),
-    });
-    if (response.ok) {
-      // Handle success
-      navigate('/allProperties');
-    } else {
-      // Handle error
-      throw new Error('Failed to submit form data');
-    }
-  } catch (error) {
-    // Handle error
-    console.error('Error submitting form data:', error);
-    alert('An error occurred while submitting form data');
-  }
+  await onFinish({
+      ...data,
+      photo: propertyImage.url,
+      email: user.email,
+  });
 };
 
   return (

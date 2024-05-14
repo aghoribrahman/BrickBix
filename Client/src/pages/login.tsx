@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { ThemedTitleV2 } from "@refinedev/mui";
 import brickbix from '../assets/brick-bix.png';
 import { CredentialResponse } from "../interfaces/google";
 

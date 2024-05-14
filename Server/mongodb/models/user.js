@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true },
   avatar: { type: String, required: true },
   allProperties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
+  allRequirement: [{ type: mongoose.Schema.Types.ObjectId, ref: "Requirement" }],
 });
 
 const userModel = mongoose.model("User", UserSchema);
