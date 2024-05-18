@@ -4,7 +4,7 @@ import User from '../mongodb/models/user.js';
 
 const saveRequirement = async (req, res) => {
   // Extract data from the request body
-  const { title, description, propertyType, askedPrice, location, email } = req.body;
+  const { title, description, propertyType, dealType, phone, askedPrice, location, email } = req.body;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -23,7 +23,9 @@ const saveRequirement = async (req, res) => {
       title,
       description,
       propertyType,
+      dealType,
       askedPrice,
+      phone,
       location,
       creator: user._id,
     });
@@ -134,7 +136,7 @@ export { deleteRequirement };
 const updateRequirement = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, propertyType, location, askedPrice } =
+    const { title, description, propertyType, dealType, phone, location, askedPrice } =
       req.body;
 
 
@@ -145,6 +147,8 @@ const updateRequirement = async (req, res) => {
         title,
         description,
         propertyType,
+        dealType,
+        phone,
         location,
         askedPrice,
       },

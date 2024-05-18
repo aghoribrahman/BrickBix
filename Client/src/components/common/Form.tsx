@@ -137,6 +137,35 @@ const Form = ({
               </Select>
               
             </FormControl>
+
+            <FormControl sx={{ flex: 1 }}>
+              <FormHelperText
+                sx={{
+                  fontWeight: 500,
+                  margin: "10px 0",
+                  fontSize: 16,
+                  color: "#11142d",
+                }}
+              >
+                Deal Type
+              </FormHelperText>
+              <Select
+                variant="outlined"
+                color="info"
+                displayEmpty
+                required
+                inputProps={{ "aria-label": "Without label" }}
+                defaultValue="apartment"
+                {...register("dealType", {
+                  required: true,
+                })}
+              >
+                <MenuItem value="Direct">Direct</MenuItem>
+                <MenuItem value="Indirect">Indirect</MenuItem>
+              </Select>
+              
+            </FormControl>
+            
             <FormControl>
               
             
@@ -148,7 +177,7 @@ const Form = ({
                   color: "#11142d",
                 }}
               >
-                Enter property price
+                Enter Property Total Price
               </FormHelperText>
               <TextField
                 fullWidth
@@ -160,9 +189,29 @@ const Form = ({
                 {...register("price", { required: true })}
               />
             </FormControl>
+            
           </Stack>
 
           <FormControl>
+          <FormHelperText
+                sx={{
+                  fontWeight: 500,
+                  margin: "10px 0",
+                  fontSize: 16,
+                  color: "#11142d",
+                }}
+              >
+                Enter Phone Number
+              </FormHelperText>
+              <TextField
+                fullWidth
+                required
+                id="outlined-basic"
+                color="info"
+                type="number"
+                variant="outlined"
+                {...register("phone", { required: true })}
+              />
             <FormHelperText
               sx={{
                 fontWeight: 500,

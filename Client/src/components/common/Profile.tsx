@@ -32,7 +32,7 @@ const fullUrl = window.location.href
 const fullUrlValue = checkURLValue(fullUrl)
 
 
-const Profile = ({ type, name, avatar, email, properties, requirements }: ProfileProps) => (
+const Profile = ({ type, name, avatar, email, properties, }: ProfileProps) => (
   <Box>
       <Typography fontSize={25} fontWeight={700} color="#11142D">
           {type} Profile
@@ -200,6 +200,7 @@ const Profile = ({ type, name, avatar, email, properties, requirements }: Profil
                   }}
               >
                   {properties?.map((property: PropertyProps) => (
+                  // @ts-ignore
                       <PropertyCard
                           key={property._id}
                           id={property._id}

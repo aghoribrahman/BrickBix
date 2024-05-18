@@ -13,15 +13,13 @@ import Star from "@mui/icons-material/Star";
 import CustomButton from "../components/common/CustomButton";
 import { useDelete, useGetIdentity } from "@refinedev/core";
 import axios from "axios";
-import BrickBix from "../assets/brick bix image.jpg"
+import BrickBix from "../assets/brick bix image.jpg";
 
-function checkImage(//@ts-ignore
-url) {
+function checkImage(url: string) {
   const img = new Image();
   img.src = url;
   return img.width !== 0 && img.height !== 0;
 }
-
 
 const PropertyDetails = () => {
   const navigate = useNavigate();
@@ -33,18 +31,11 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
-        // Determine the API endpoint based on the URL
         const endpoint = `https://refine-dashboard-3gx3.onrender.com/api/v1/properties/${id}`;
-  
-        // Make the API call
         const response = await axios.get(endpoint);
-  
-        // Check if response data includes 'requirements'
         if ('requirements' in response.data) {
-          // If 'requirements' exist, set propertyInfo to response.data.requirements
           setPropertyInfo(response.data.requirements);
         } else {
-          // If 'requirements' do not exist, set propertyInfo to response.data
           setPropertyInfo(response.data);
         }
       } catch (error) {
@@ -54,15 +45,13 @@ const PropertyDetails = () => {
   
     fetchPropertyDetails();
   }, [id]);
-  console.log(propertyInfo)
   
 
   if (!propertyInfo) {
     return <div>Loading...</div>;
   }
 
-  const isCurrentUser =
-  //@ts-ignore
+  const isCurrentUser = // @ts-ignore
    user?.email === propertyInfo?.creator?.email;
 
   const handleDeleteProperty = () => {
@@ -71,7 +60,7 @@ const PropertyDetails = () => {
       mutate(
         {
           resource: "properties",
-          //@ts-ignore
+          // @ts-ignore
           id: id,
         },
         {
@@ -90,24 +79,20 @@ const PropertyDetails = () => {
       </Typography>
 
       <Grid container spacing={4}>
-        {/* Property Details Section */}
         <Grid item xs={12} lg={6}>
           <Box maxWidth={764}>
-            {/* Property Image */}
             <img
-              //@ts-ignore
-              src={propertyInfo.photo}
+              src={// @ts-ignore
+                propertyInfo.photo}
               alt="property_details-img"
               style={{ borderRadius: "10px", width: "100%", maxHeight: "330px" }}
               className="property_details-img"
             />
 
-
             <Box mt="15px">
-              {/* Property Type and Rating */}
               <Stack direction="row" justifyContent="space-between" flexWrap="wrap" alignItems="center">
                 <Typography fontSize={18} fontWeight={500} color="#11142D" textTransform="capitalize">
-                  {//@ts-ignore
+                  {// @ts-ignore
                   propertyInfo.propertyType}
                 </Typography>
                 <Box>
@@ -117,7 +102,6 @@ const PropertyDetails = () => {
                 </Box>
               </Stack>
 
-              {/* Property Title, Location, and Price */}
               <Stack
                 direction="row"
                 flexWrap="wrap"
@@ -127,51 +111,62 @@ const PropertyDetails = () => {
               >
                 <Box>
                   <Typography fontSize={22} fontWeight={600} mt="10px" color="#11142D">
-                    {//@ts-ignore
+                    {// @ts-ignore
                     propertyInfo.title}
                   </Typography>
                   <Stack mt={0.5} direction="row" alignItems="center" gap={0.5}>
                     <Place sx={{ color: "#808191" }} />
                     <Typography fontSize={14} color="#808191">
-                      {//@ts-ignore
+                      {// @ts-ignore
                       propertyInfo.location}
                     </Typography>
                   </Stack>
                 </Box>
 
-                <Box>
+                <Box display="flex" flexDirection="column" alignItems="center">
                   <Typography fontSize={16} fontWeight={600} mt="10px" color="#11142D">
-                    Price
+                    Total Price
                   </Typography>
-                  <Stack direction="row" alignItems="flex-end" gap={1}>
                   <Typography fontSize={14} fontWeight={600} color="#475be8">
-                    ₹ {new Intl.NumberFormat('en-IN').format(parseFloat(//@ts-ignore
-                      propertyInfo.price))}/-
+                    ₹ {new Intl.NumberFormat('en-IN').format(parseFloat(// @ts-ignore
+                    propertyInfo.price))}/-
                   </Typography>
-                    
-                   
-                  </Stack>
                 </Box>
               </Stack>
 
-              {/* Property Description */}
               <Stack mt="25px" direction="column" gap="10px">
                 <Typography fontSize={18} color="#11142D">
                   Description
                 </Typography>
                 <Typography fontSize={14} color="#808191">
-                  {//@ts-ignore
+                  {// @ts-ignore
                   propertyInfo.description}
+                </Typography>
+              </Stack>
+              <Stack mt="25px" direction="column" gap="10px">
+                <Typography fontSize={18} color="#11142D">
+                  Contact
+                </Typography>
+                <Typography fontSize={14} color="#808191">
+                  {// @ts-ignore
+                  propertyInfo.phone}
+                </Typography>
+              </Stack>
+              <Stack mt="25px" direction="column" gap="10px">
+                <Typography fontSize={18} color="#11142D">
+                  Deal Type
+                </Typography>
+                <Typography fontSize={14} color="#808191">
+                  {// @ts-ignore
+                  propertyInfo.dealType}
                 </Typography>
               </Stack>
             </Box>
           </Box>
         </Grid>
 
-        {/* Property Agent Section */}
         <Grid item xs={12} lg={6}>
           <Box display="flex" flexDirection="column" gap="20px">
-            {/* Property Agent Info */}
             <Stack
               width="100%"
               p={2}
@@ -183,8 +178,8 @@ const PropertyDetails = () => {
             >
               <Stack mt={2} justifyContent="center" alignItems="center" textAlign="center">
                 <img
-                  src={//@ts-ignore
-                    propertyInfo.creator && checkImage(propertyInfo.creator.avatar)//@ts-ignore
+                  src={// @ts-ignore
+                    propertyInfo.creator && checkImage(propertyInfo.creator.avatar) // @ts-ignore
                       ? propertyInfo.creator.avatar
                       : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
                   }
@@ -196,9 +191,8 @@ const PropertyDetails = () => {
 
                 <Box mt="15px">
                   <Typography fontSize={18} fontWeight={600} color="#11142D">
-                    {
-                    //@ts-ignore
-                    propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
+                  // @ts-ignore{// @ts-ignore
+                  propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
                   </Typography>
 
                   <Typography mt="5px" fontSize={14} fontWeight={400} color="#808191">
@@ -214,28 +208,27 @@ const PropertyDetails = () => {
                 </Stack>
 
                 <Typography mt={1} fontSize={16} fontWeight={600} color="#11142D">
-                  {//@ts-ignore
+                  {// @ts-ignore
                   propertyInfo.creator && propertyInfo.creator.allProperties ? propertyInfo.creator.allProperties.length : 0} Properties
                 </Typography>
               </Stack>
 
-              {/* Action Buttons */}
               <Stack width="100%" mt="25px" direction="row" flexWrap="wrap" gap={2}>
                 <CustomButton
-                  title={!isCurrentUser ? "Message" : "Edit"}
+                  title={!isCurrentUser ? "Disable" : "Edit"}
                   backgroundColor="#475BE8"
                   color="#FCFCFC"
                   fullWidth
                   icon={!isCurrentUser ? <ChatBubble /> : <Edit />}
                   handleClick={() => {
                     if (isCurrentUser) {
-                      navigate(`/allProperties/properties/edit/${//@ts-ignore
+                      navigate(`/allProperties/properties/edit/${// @ts-ignore
                         propertyInfo._id}`);
                     }
                   }}
                 />
                 <CustomButton
-                  title={!isCurrentUser ? "Call" : "Delete"}
+                  title={!isCurrentUser ? "Disable" : "Delete"}
                   backgroundColor={!isCurrentUser ? "#2ED480" : "#d42e2e"}
                   color="#FCFCFC"
                   fullWidth
@@ -246,21 +239,6 @@ const PropertyDetails = () => {
                 />
               </Stack>
             </Stack>
-
-            {/* Google Maps */}
-            <Stack>
-              <img
-                src="https://serpmedia.org/scigen/images/googlemaps-nyc-standard.png?crc=3787557525"
-                width="100%"
-                height={306}
-                style={{ borderRadius: 10, objectFit: "cover" }}
-              />
-            </Stack>
-
-            {/* Book Now Button */}
-            <Box>
-              <CustomButton title="Book Now" backgroundColor="#475BE8" color="#FCFCFC" fullWidth />
-            </Box>
           </Box>
         </Grid>
       </Grid>

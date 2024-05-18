@@ -6,8 +6,7 @@ import { useGetIdentity } from "@refinedev/core";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
-
+import { useActiveAuthProvider } from "@refinedev/core";
 import { AgentCardProp, InfoBarProps } from "../../interfaces/agent";
 
 function checkImage(url: any) {
@@ -32,8 +31,9 @@ const AgentCard = ({
   avatar,
   noOfProperties,
 }: AgentCardProp) => {
+  const authProvider = useActiveAuthProvider();
   const { data: currentUser } = useGetIdentity({
-    v3LegacyAuthProviderCompatible: true,
+    v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
 
   const generateLink = () => {
@@ -43,7 +43,18 @@ const AgentCard = ({
   };
 
   return (
+    
     <Box
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+    height="100vh" // Adjust the height as needed
+  >
+    <Typography variant="h4" align="center" color="primary">
+      Coming Soon
+    </Typography>
+    
+    {/*<Box
       component={Link}
       to={generateLink()}
       width="100%"
@@ -104,6 +115,7 @@ const AgentCard = ({
           />
         </Stack>
       </Stack>
+      </Box> */}
     </Box>
   );
 };

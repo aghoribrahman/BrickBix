@@ -159,6 +159,24 @@ const RequirementDetails = () => {
                   propertyInfo.description}
                 </Typography>
               </Stack>
+              <Stack mt="25px" direction="column" gap="10px">
+                <Typography fontSize={18} color="#11142D">
+                  Contact
+                </Typography>
+                <Typography fontSize={14} color="#808191">
+                  {//@ts-ignore
+                  propertyInfo.phone}
+                </Typography>
+              </Stack>
+              <Stack mt="25px" direction="column" gap="10px">
+                <Typography fontSize={18} color="#11142D">
+                  Deal Type
+                </Typography>
+                <Typography fontSize={14} color="#808191">
+                  {//@ts-ignore
+                  propertyInfo.dealType}
+                </Typography>
+              </Stack>
             </Box>
           </Box>
         </Grid>
@@ -242,7 +260,7 @@ const RequirementDetails = () => {
               </Stack>
             </Stack>
 
-            {/* Google Maps */}
+            {/* Google Maps 
             <Stack>
               <img
                 src="https://serpmedia.org/scigen/images/googlemaps-nyc-standard.png?crc=3787557525"
@@ -251,11 +269,11 @@ const RequirementDetails = () => {
                 style={{ borderRadius: 10, objectFit: "cover" }}
               />
             </Stack>
-
-            {/* Book Now Button */}
+                  */}
+            {/* Book Now Button
             <Box>
               <CustomButton title="Book Now" backgroundColor="#475BE8" color="#FCFCFC" fullWidth />
-            </Box>
+            </Box> */}
           </Box>
         </Grid>
       </Grid>

@@ -15,7 +15,6 @@ const MyProfile = () => {
 
   const myProfile = data?.data ?? {};
 
-  console.log(myProfile.allRequirement)
 
   if (isLoading) 
     return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}> 
@@ -35,7 +34,6 @@ const MyProfile = () => {
       email={myProfile.email}
       avatar={myProfile.avatar}
       properties={myProfile.allProperties}
-      requirements={myProfile.allRequirement}
     />
   );
 };

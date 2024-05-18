@@ -7,7 +7,7 @@ import {
   useGetIdentity,
   useActiveAuthProvider,
 } from "@refinedev/core";
-
+import BrickBixImage from '../assets/brick bix image.jpg';
 import  PieChart  from '../components/charts/PieChart';
 import  PropertyReferrals  from '../components/charts/PropertyReferrals';
 import  TotalRevenue  from '../components/charts/TotalRevenue';
@@ -20,26 +20,31 @@ const Home = () => {
   const { data: user } = useGetIdentity({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
-  const userId = user?.id;
+
   const [myProperties, setMyProperties] = useState<any[]>([]);
+  const [requirements, setRequirements] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProperties = async () => {
         try {
             const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
-            if (!response.ok) {
+            const responseRequirement = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/requirement");
+            if (!response.ok || !responseRequirement.ok) {
                 throw new Error("Failed to fetch properties");
             }
             const data = await response.json();
+            const dataRequirement = await responseRequirement.json()
             setMyProperties(data);
+            setRequirements(dataRequirement.requirements)
         } catch (error) {
             console.error("Error fetching properties:", error);
         }
     };
 
     fetchProperties();
-}, [myProperties]);
+}, [myProperties, requirements]);
 
+  console.log(requirements)
   return (
     <Box>
       <Typography sx={{margin:'10px'}} fontSize={15} fontWeight={700} color="#11142D">
@@ -67,22 +72,61 @@ const Home = () => {
           Latest Properties 
         </Typography>
         <Box
-    mt={2.5}
-    sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 4 }} 
->
-    {myProperties.slice().reverse().slice(0, 5).map((property) => (
-        <PropertyCard
-            key={property._id}
-            id={property._id}
-            title={property.title}
-            location={property.location}
-            price={property.price}
-            photo={property.photo}
-            propertyType={property.propertyType}
-            url={"properties"}
-        />
-    ))}
-</Box>
+            mt={2.5}
+            sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 4 }} 
+        >
+            {myProperties.slice().reverse().slice(0, 5).map((property) => (
+                <PropertyCard
+                    key={property._id}
+                    id={property._id}
+                    title={property.title}
+                    location={property.location}
+                    dealType={property.dealType}
+                    price={property.price}
+                    phone={property.phone}
+                    photo={property.photo}
+                    propertyType={property.propertyType}
+                    url={"properties"}
+                />
+            ))}
+        </Box>
+
+      </Box>
+
+      <Box
+        flex={1}
+        borderRadius="15px"
+        padding="20px"
+        bgcolor="#fcfcfc"
+        display="flex"
+        justifyContent="center" 
+        alignItems="center"
+        flexDirection="column"
+        minWidth="100%"
+        mt="25px"
+      >
+        <Typography fontSize="18px" fontWeight={600} color="#11142d">
+          Latest Requirement
+        </Typography>
+        <Box
+            mt={2.5}
+            sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 4 }} 
+        >
+            {requirements.slice().reverse().slice(0, 5).map((property) => (
+                <PropertyCard
+                    key={property._id}
+                    id={property._id}
+                    title={property.title}
+                    location={property.location}
+                    dealType={property.dealType}
+                    price={property.askedPrice}
+                    phone={property.phone}
+                    photo={BrickBixImage}
+                    propertyType={property.propertyType}
+                    url={"properties-requirement"}
+                />
+            ))}
+        </Box>
 
       </Box>
        

@@ -22,6 +22,16 @@ const Agents = () => {
             <Typography fontSize={25} fontWeight={700} color="#11142d">
                 Agents List
             </Typography>
+            <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            height="100vh" // Adjust the height as needed
+        >
+            <Typography variant="h4" align="center" color="primary">
+            Coming Soon
+            </Typography>
+            </Box>
             {/*<Box
                 mt="20px"
                 sx={{

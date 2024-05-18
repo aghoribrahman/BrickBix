@@ -18,6 +18,8 @@ export interface PropertyCardProps {
   title: string;
   location: string;
   price: string;
+  phone: string;
+  dealType:string;
   photo: string;
   propertyType: string;
   url: string;
