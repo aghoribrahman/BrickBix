@@ -235,7 +235,7 @@ const RequirementDetails = () => {
               {/* Action Buttons */}
               <Stack width="100%" mt="25px" direction="row" flexWrap="wrap" gap={2}>
                 <CustomButton
-                  title={!isCurrentUser ? "Message" : "Edit"}
+                  title={!isCurrentUser ? "Disable" : "Edit"}
                   backgroundColor="#475BE8"
                   color="#FCFCFC"
                   fullWidth
@@ -248,7 +248,7 @@ const RequirementDetails = () => {
                   }}
                 />
                 <CustomButton
-                  title={!isCurrentUser ? "Call" : "Delete"}
+                  title={!isCurrentUser ? "Disable" : "Delete"}
                   backgroundColor={!isCurrentUser ? "#2ED480" : "#d42e2e"}
                   color="#FCFCFC"
                   fullWidth

@@ -58,7 +58,7 @@ const Requirement = () => {
     useEffect(() => {
         const fetchRequirements = async () => {
             try {
-                const response = await fetch('http://localhost:/api/v1/requirement');
+                const response = await fetch('https://refine-dashboard-3gx3.onrender.com/api/v1/requirement');
                 if (!response.ok) {
                     throw new Error('Failed to fetch requirements');
                 }
@@ -81,6 +81,7 @@ const Requirement = () => {
              f.field === "title")?.value || "",
     };
 
+    // Apply filtering logic to all properties, not just the ones on the current page
     const filteredProperties = useMemo(() => {
         return allRequirement
             .filter(property => {
@@ -99,7 +100,7 @@ const Requirement = () => {
 
     if (isError) return <Typography>Error...</Typography>;
 
-    const propertiesPerPage = 10; // Number of properties to display per page
+    const propertiesPerPage = 50; // Number of properties to display per page
     const totalProperties = filteredProperties.length;
     const calculatedPageCount = Math.ceil(totalProperties / propertiesPerPage);
 
@@ -138,12 +139,11 @@ const Requirement = () => {
                                         operator: "contains",
                                         value: e.currentTarget.value ? e.currentTarget.value : undefined,
                                     },
-                                    ...filters.filter(f => // @ts-ignore
-                                     f.field !== "title" && f.field !== "location")
+                                    ...filters.filter(f =>// @ts-ignore
+                                    f.field !== "title" && f.field !== "location")
                                 ]);
                             }}
                         />
-             
                         <Select
                             variant="outlined"
                             color="info"
@@ -174,7 +174,7 @@ const Requirement = () => {
             </Stack>
             <Stack direction={{ xs: 'column', sm: 'column' }} justifyContent="space-between" alignItems="center" spacing={2}>
                 <CustomButton
-                    title="Add Property"
+                    title="Add Requirement"
                     handleClick={() => navigate("properties-requirement/create")}
                     backgroundColor="#475be8"
                     color="#fcfcfc"
@@ -228,7 +228,7 @@ const Requirement = () => {
                         defaultValue={10}
                         onChange={(e) => setPageSize(e.target.value ? Number(e.target.value) : 10)}
                     >
-                        {[10, 20, 30, 40, 50].map((size) => (
+                        {[50, 100].map((size) => (
                             <MenuItem key={size} value={size}>
                                 Show {size}
                             </MenuItem>
@@ -241,3 +241,4 @@ const Requirement = () => {
 };
 
 export default Requirement;
+

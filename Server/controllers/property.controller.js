@@ -139,16 +139,28 @@ const deleteProperty = async (req, res) => {
       return res.status(404).json({ message: "Property not found" });
     }
 
+    // Extract public_id from the property URL
+    const imageUrl = propertyToDelete.photo; // Assuming `photo` contains the URL
+    const publicId = imageUrl.split('/').slice(-1)[0].split('.')[0]; // Extracting the public_id
+
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) {
+          throw new Error('Failed to delete image from Cloudinary');
+        }
+      });
+
+      // Delete the property from the database
       await propertyToDelete.remove({ session });
       propertyToDelete.creator.allProperties.pull(propertyToDelete);
       await propertyToDelete.creator.save({ session });
       await session.commitTransaction();
 
-      res.status(200).json({ message: "Property deleted successfully" });
+      res.status(200).json({ message: "Property and image deleted successfully" });
     } catch (error) {
       await session.abortTransaction();
       throw error;
@@ -160,6 +172,19 @@ const deleteProperty = async (req, res) => {
   }
 };
 
+const getTopLatestProperties = async (req, res) => {
+  try {
+    // Fetch the latest 5 properties sorted by creation date in descending order
+    const latestProperties = await Property.find().sort({ createdAt: -1 }).limit(5);
+
+    // Return the latest properties in the response
+    res.status(200).json({ properties: latestProperties });
+  } catch (error) {
+    console.error('Error fetching latest properties:', error);
+    res.status(500).json({ message: 'Failed to fetch latest properties', error: error.message });
+  }
+};
+
 
 export {
   getAllProperties,
@@ -167,4 +192,5 @@ export {
   createProperty,
   updateProperty,
   deleteProperty,
+  getTopLatestProperties,
 };

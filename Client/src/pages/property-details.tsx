@@ -191,7 +191,7 @@ const PropertyDetails = () => {
 
                 <Box mt="15px">
                   <Typography fontSize={18} fontWeight={600} color="#11142D">
-                  // @ts-ignore{// @ts-ignore
+                  {// @ts-ignore
                   propertyInfo.creator && propertyInfo.creator.name ? propertyInfo.creator.name : "Unknown"}
                   </Typography>
 

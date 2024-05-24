@@ -49,9 +49,6 @@ const saveRequirement = async (req, res) => {
   }
 };
 
-export { saveRequirement };
-
-
 const getAllRequirements = async (req, res) => {
   try {
     // Fetch all requirements from the database
@@ -65,7 +62,6 @@ const getAllRequirements = async (req, res) => {
   }
 };
 
-export { getAllRequirements };
 
 const getRequirementById = async (req, res) => {
   try {
@@ -129,10 +125,6 @@ const deleteRequirement = async (req, res) => {
 };
 
 
-export { deleteRequirement };
-
-
-
 const updateRequirement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -160,7 +152,26 @@ const updateRequirement = async (req, res) => {
   }
 };
 
-export { updateRequirement };
+const getTopLatestRequirements = async (req, res) => {
+  try {
+    // Fetch the latest 5 requirements sorted by creation date in descending order
+    const latestRequirements = await RequirementModel.find().sort({ createdAt: -1 }).limit(5);
+
+    // Return the latest requirements in the response
+    res.status(200).json({ requirements: latestRequirements });
+  } catch (error) {
+    console.error('Error fetching latest requirements:', error);
+    res.status(500).json({ message: 'Failed to fetch latest requirements', error: error.message });
+  }
+};
 
 
-export { getRequirementById };
+
+
+export { updateRequirement, 
+  getTopLatestRequirements, 
+  getRequirementById, 
+  deleteRequirement,
+  getAllRequirements,
+  saveRequirement,
+ };

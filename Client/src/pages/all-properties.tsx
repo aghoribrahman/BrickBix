@@ -128,7 +128,7 @@ export const AllProperties = () => {
       );
   
     if (isError) return <Typography>Error...</Typography>;
-    const propertiesPerPage = 10; // Number of properties to display per page
+    const propertiesPerPage = 50; // Number of properties to display per page
     const startIndex = (current - 1) * propertiesPerPage;
     const propertiesToShow = filteredProperties.slice(
       startIndex,
@@ -273,8 +273,10 @@ export const AllProperties = () => {
                         defaultValue={propertiesPerPage}
                         onChange={(e) => setPageSize(Number(e.target.value))}
                     >
-                        {[10, 20, 30, 40, 50].map(size => (
-                            <MenuItem key={size} value={size}>Show {size}</MenuItem>
+                        {[50, 100].map((size) => (
+                            <MenuItem key={size} value={size}>
+                                Show {size}
+                            </MenuItem>
                         ))}
                     </Select>
                 </Box>

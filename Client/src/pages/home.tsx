@@ -28,7 +28,7 @@ const Home = () => {
     const fetchProperties = async () => {
         try {
             const response = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/properties");
-            const responseRequirement = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/requirement");
+            const responseRequirement = await fetch("https://refine-dashboard-3gx3.onrender.com/api/v1/requirement/five");
             if (!response.ok || !responseRequirement.ok) {
                 throw new Error("Failed to fetch properties");
             }
@@ -42,9 +42,19 @@ const Home = () => {
     };
 
     fetchProperties();
-}, [myProperties, requirements]);
+}, []);
+    
+const commercialProperties = myProperties.filter(property => property.propertyType === 'Commercial');
 
-  console.log(requirements)
+const apartmentProperties = myProperties.filter(property => property.propertyType === 'apartment');
+
+
+const apartmentPropertiesCount = apartmentProperties.length;
+
+const commercialPropertiesCount = commercialProperties.length;
+
+
+
   return (
     <Box>
       <Typography sx={{margin:'10px'}} fontSize={15} fontWeight={700} color="#11142D">
@@ -60,7 +70,7 @@ const Home = () => {
         flex={1}
         borderRadius="15px"
         padding="20px"
-        bgcolor="#fcfcfc"
+        bgcolor="#F6F5F2"
         display="flex"
         justifyContent="center" 
         alignItems="center"
@@ -97,7 +107,7 @@ const Home = () => {
         flex={1}
         borderRadius="15px"
         padding="20px"
-        bgcolor="#fcfcfc"
+        bgcolor="#F6F5F2"
         display="flex"
         justifyContent="center" 
         alignItems="center"
@@ -139,20 +149,20 @@ const Home = () => {
           colors={["#275be8", "#c4e8ef"]}
         />
         <PieChart
-          title="Properties for Rent"
-          value={550}
+          title="Requirements Listed"
+          value={requirements.length}
           series={[60, 40]}
           colors={["#275be8", "#c4e8ef"]}
         />
         <PieChart
-          title="Commercial Properties"
-          value={5684}
+          title="Commercial Properties for Sell"
+          value={commercialPropertiesCount}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}
         />
         <PieChart
-          title="Plot For Sell"
-          value={555}
+          title="Apartment For Sell"
+          value={apartmentPropertiesCount}
           series={[75, 25]}
           colors={["#275be8", "#c4e8ef"]}
         />
