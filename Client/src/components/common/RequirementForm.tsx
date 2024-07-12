@@ -170,7 +170,7 @@ const RequirementForm = ({
                   color: "#11142d",
                 }}
               >
-                Enter Total Asked Price
+                Enter Budget
               </FormHelperText>
               <TextField
                 fullWidth

@@ -30,11 +30,12 @@ function checkURLValue(url: string): string {
 
 const fullUrl = window.location.href
 const fullUrlValue = checkURLValue(fullUrl)
+console.log(fullUrlValue)
 
 
 const Profile = ({ type, name, avatar, email, properties, }: ProfileProps) => (
   <Box>
-      <Typography fontSize={25} fontWeight={700} color="#11142D">
+      <Typography fontSize={15} fontWeight={700} color="#11142D">
           {type} Profile
       </Typography>
 
