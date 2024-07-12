@@ -184,6 +184,7 @@ const getTopLatestProperties = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch latest properties', error: error.message });
   }
 };
+console.log("Recovery CHeck")
 
 
 export {
