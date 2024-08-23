@@ -155,7 +155,9 @@ const updateRequirement = async (req, res) => {
 const getTopLatestRequirements = async (req, res) => {
   try {
     // Fetch the latest 5 requirements sorted by creation date in descending order
-    const latestRequirements = await RequirementModel.find().sort({ createdAt: -1 }).limit(5);
+    const latestRequirements = await RequirementModel.find()
+    .sort({ createdAt: -1 })
+    .limit(5);
 
     // Return the latest requirements in the response
     res.status(200).json({ requirements: latestRequirements });

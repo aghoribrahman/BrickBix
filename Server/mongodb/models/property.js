@@ -10,7 +10,7 @@ const PropertySchema = new mongoose.Schema({
   phone: { type: Number, required: true },
   photo: { type: String, required: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-});
+},{timestamps: true});
 
 const propertyModel = mongoose.model("Property", PropertySchema);
 

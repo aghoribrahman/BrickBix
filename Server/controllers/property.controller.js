@@ -1,6 +1,5 @@
 import Property from "../mongodb/models/property.js";
 import User from "../mongodb/models/user.js";
-
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
@@ -21,6 +20,7 @@ const getAllProperties = async (req, res) => {
     _sort,
     title_like = "",
     propertyType = "",
+    location_like = "",
   } = req.query;
 
   const query = {};
@@ -175,16 +175,26 @@ const deleteProperty = async (req, res) => {
 const getTopLatestProperties = async (req, res) => {
   try {
     // Fetch the latest 5 properties sorted by creation date in descending order
-    const latestProperties = await Property.find().sort({ createdAt: -1 }).limit(5);
+    const latestProperties =  await Property.find()
+    .sort({ createdAt: -1 }) // Sort by creation date, newest first
+    .limit(5); // Limit to 5 results
+    
+    if (!latestProperties || latestProperties.length === 0) {
+      return res.status(404).json({ message: 'No properties found' });
+    }
+
+    // console.log("Fetched latest properties:", latestProperties); // Improved logging
 
     // Return the latest properties in the response
     res.status(200).json({ properties: latestProperties });
   } catch (error) {
-    console.error('Error fetching latest properties:', error);
+    console.error('Error fetching latest properties:', error.message);
     res.status(500).json({ message: 'Failed to fetch latest properties', error: error.message });
   }
 };
-console.log("Recovery CHeck")
+
+
+
 
 
 export {

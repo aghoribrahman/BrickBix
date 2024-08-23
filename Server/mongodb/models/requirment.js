@@ -9,7 +9,7 @@ const RequirementSchema = new mongoose.Schema({
   askedPrice: { type: Number, required: true }, // Changed from "price" to "askedPrice"
   location: { type: String, required: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-});
+},{timestamps: true});
 
 const requirementModel = mongoose.model("Requirement", RequirementSchema);
 
