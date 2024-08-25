@@ -1,10 +1,18 @@
-import mongoose from 'mongoose';
-import RequirementModel from '../mongodb/models/requirment.js';
-import User from '../mongodb/models/user.js';
+import Property from "../mongodb/models/property.js";
+import User from "../mongodb/models/user.js";
+import mongoose from "mongoose";
+import * as dotenv from "dotenv";
+import { v2 as cloudinary } from "cloudinary";
 
+dotenv.config();
 
-const getAllRequirements = async (req, res) => {
-  // Extract query parameters from the request
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const getAllProperties = async (req, res) => {
   const {
     _end,
     _order,
@@ -14,10 +22,12 @@ const getAllRequirements = async (req, res) => {
     propertyType = "",
   } = req.query;
 
-  // Initialize an empty query object
   const query = {};
 
-  // Add filters to the query object based on provided parameters
+  if (propertyType !== "") {
+    query.propertyType = propertyType;
+  }
+
   if (title_like) {
     const regex = new RegExp(title_like, 'i'); // Create a regex for case-insensitive search
     query.$or = [
@@ -26,139 +36,157 @@ const getAllRequirements = async (req, res) => {
     ];
   }
 
-  if (propertyType) {
-    query.propertyType = propertyType.toLowerCase(); // Ensure consistent case
-  }
-
-
-  console.log(query.title)
   try {
-    // Log the query to verify it's as expected
-    console.log('Query:', query);
+    const count = await Property.countDocuments({ query });
 
-    // Count the total number of documents that match the query
-    const count = await RequirementModel.countDocuments(query);
-    console.log(query.title)
-    // Fetch the filtered, sorted, and paginated requirements from the database
-    const requirements = await RequirementModel.find(query)
-      .limit(parseInt(_end) || 10) // Default to 10 if _end is not provided
-      .skip(parseInt(_start) || 0) // Default to 0 if _start is not provided
-      .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
-      console.log(requirements)
+    const properties = await Property.find(query)
+      .limit(_end)
+      .skip(_start)
+      .sort({ [_sort]: _order });
 
-    // Set response headers to include the total count
     res.header("x-total-count", count);
     res.header("Access-Control-Expose-Headers", "x-total-count");
 
-    // Send the requirements in the response
-    res.status(200).json(requirements);
+    res.status(200).json(properties);
   } catch (error) {
-    // Handle any errors that occur during the database operations
-    console.error('Error fetching requirements:', error);
-    res.status(500).json({ message: 'Failed to fetch requirements', error: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getPropertyDetail = async (req, res) => {
+  const { id } = req.params;
+  const propertyExists = await Property.findOne({ _id: id }).populate(
+    "creator",
+  );
+
+  if (propertyExists) {
+    res.status(200).json(propertyExists);
+  } else {
+    res.status(404).json({ message: "Property not found" });
   }
 };
 
 
-
-const saveRequirement = async (req, res) => {
-  // Extract data from the request body
-  const { title, description, propertyType, dealType, phone, askedPrice, location, email } = req.body;
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+const createProperty = async (req, res) => {
   try {
-    // Find the user by email
-    const user = await User.findOne({ email }).session(session);
-    if (!user) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Create a new requirement document
-    const requirement = await RequirementModel.create({
+    const {
       title,
       description,
       propertyType,
       dealType,
-      askedPrice,
-      phone,
       location,
+      price,
+      phone,
+      photo,
+      email,
+      totalSquareFeet,
+    } = req.body;
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    const user = await User.findOne({ email }).session(session);
+
+    if (!user) throw new Error("User not found");
+
+    const photoUrl = await cloudinary.uploader.upload(photo);
+
+    const newProperty = await Property.create({
+      title,
+      description,
+      propertyType,
+      dealType,
+      location,
+      price,
+      phone,
+      photo: photoUrl.url,
+      totalSquareFeet, // Adding the new field
       creator: user._id,
     });
 
-    // Add the new requirement to the user's array
-    user.allRequirement.push(requirement);
+    user.allProperties.push(newProperty._id);
     await user.save({ session });
 
-    // Commit the transaction
     await session.commitTransaction();
-    session.endSession();
 
-    // Return the created requirement data in the response
-    res.status(201).json({ message: 'Requirement created successfully', requirement });
+    res.status(200).json({ message: "Property created successfully" });
   } catch (error) {
-    // Rollback the transaction on error
-    await session.abortTransaction();
-    session.endSession();
-    console.error('Error saving requirement:', error);
-    res.status(500).json({ message: 'Failed to save requirement', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 
-const getRequirementById = async (req, res) => {
+const updateProperty = async (req, res) => {
   try {
-    // Extract the requirement ID from the request parameters
     const { id } = req.params;
+    const {
+      title,
+      description,
+      propertyType,
+      dealType,
+      location,
+      price,
+      phone,
+      photo,
+      totalSquareFeet,
+    } = req.body;
 
-    // Find the requirement by ID in the database, populating the 'creator' field
-    const requirement = await RequirementModel.findOne({ _id: id }).populate('creator');
+    const photoUrl = photo ? await cloudinary.uploader.upload(photo) : null;
 
-    // If the requirement is found, return it in the response
-    if (requirement) {
-      res.status(200).json(requirement);
-    } else {
-      // If the requirement is not found, return a 404 status with an error message
-      res.status(404).json({ message: 'Requirement not found' });
-    }
+    await Property.findByIdAndUpdate(
+      { _id: id },
+      {
+        title,
+        description,
+        propertyType,
+        dealType,
+        phone,
+        location,
+        price,
+        photo: photoUrl?.url || photo,
+        totalSquareFeet, // Adding the new field
+      }
+    );
+
+    res.status(200).json({ message: "Property updated successfully" });
   } catch (error) {
-    // If an error occurs, log it and return a 500 status with an error message
-    console.error('Error fetching requirement by ID:', error);
-    res.status(500).json({ message: 'Failed to fetch requirement', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-const deleteRequirement = async (req, res) => {
+
+const deleteProperty = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const propertyToDelete = await RequirementModel.findById(id).populate("creator");
+    const propertyToDelete = await Property.findById(id).populate("creator");
 
     if (!propertyToDelete) {
       return res.status(404).json({ message: "Property not found" });
     }
 
+    // Extract public_id from the property URL
+    const imageUrl = propertyToDelete.photo; // Assuming `photo` contains the URL
+    const publicId = imageUrl.split('/').slice(-1)[0].split('.')[0]; // Extracting the public_id
+
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      // Remove the requirement document
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) {
+          throw new Error('Failed to delete image from Cloudinary');
+        }
+      });
+
+      // Delete the property from the database
       await propertyToDelete.remove({ session });
-
-      // Remove the reference to the requirement from the user's array
-      const user = propertyToDelete.creator;
-      user.allRequirement.pull(propertyToDelete);
-
-      // Save the user document
-      await user.save({ session });
-
-      // Commit the transaction
+      propertyToDelete.creator.allProperties.pull(propertyToDelete);
+      await propertyToDelete.creator.save({ session });
       await session.commitTransaction();
 
-      res.status(200).json({ message: "Property deleted successfully" });
+      res.status(200).json({ message: "Property and image deleted successfully" });
     } catch (error) {
       await session.abortTransaction();
       throw error;
@@ -170,56 +198,36 @@ const deleteRequirement = async (req, res) => {
   }
 };
 
-
-const updateRequirement = async (req, res) => {
+const getTopLatestProperties = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { title, description, propertyType, dealType, phone, location, askedPrice } =
-      req.body;
+    // Fetch the latest 5 properties sorted by creation date in descending order
+    const latestProperties =  await Property.find()
+    .sort({ createdAt: -1 }) // Sort by creation date, newest first
+    .limit(5); // Limit to 5 results
+    
+    if (!latestProperties || latestProperties.length === 0) {
+      return res.status(404).json({ message: 'No properties found' });
+    }
 
+    // console.log("Fetched latest properties:", latestProperties); // Improved logging
 
-
-    await RequirementModel.findByIdAndUpdate(
-      { _id: id },
-      {
-        title,
-        description,
-        propertyType,
-        dealType,
-        phone,
-        location,
-        askedPrice,
-      },
-    );
-
-    res.status(200).json({ message: "Requirement updated successfully" });
+    // Return the latest properties in the response
+    res.status(200).json({ properties: latestProperties });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-const getTopLatestRequirements = async (req, res) => {
-  try {
-    // Fetch the latest 5 requirements sorted by creation date in descending order
-    const latestRequirements = await RequirementModel.find()
-    .sort({ createdAt: -1 })
-    .limit(5);
-
-    // Return the latest requirements in the response
-    res.status(200).json({ requirements: latestRequirements });
-  } catch (error) {
-    console.error('Error fetching latest requirements:', error);
-    res.status(500).json({ message: 'Failed to fetch latest requirements', error: error.message });
+    console.error('Error fetching latest properties:', error.message);
+    res.status(500).json({ message: 'Failed to fetch latest properties', error: error.message });
   }
 };
 
 
 
 
-export { updateRequirement, 
-  getTopLatestRequirements, 
-  getRequirementById, 
-  deleteRequirement,
-  getAllRequirements,
-  saveRequirement,
- };
+
+export {
+  getAllProperties,
+  getPropertyDetail,
+  createProperty,
+  updateProperty,
+  deleteProperty,
+  getTopLatestProperties,
+};

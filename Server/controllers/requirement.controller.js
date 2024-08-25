@@ -2,6 +2,65 @@ import mongoose from 'mongoose';
 import RequirementModel from '../mongodb/models/requirment.js';
 import User from '../mongodb/models/user.js';
 
+
+const getAllRequirements = async (req, res) => {
+  // Extract query parameters from the request
+  const {
+    _end,
+    _order,
+    _start,
+    _sort,
+    title_like = "",
+    propertyType = "",
+  } = req.query;
+
+  // Initialize an empty query object
+  const query = {};
+
+  // Add filters to the query object based on provided parameters
+  if (title_like) {
+    const regex = new RegExp(title_like, 'i'); // Create a regex for case-insensitive search
+    query.$or = [
+      { title: regex },
+      { location: regex }
+    ];
+  }
+
+  if (propertyType) {
+    query.propertyType = propertyType.toLowerCase(); // Ensure consistent case
+  }
+
+
+  console.log(query.title)
+  try {
+    // Log the query to verify it's as expected
+    console.log('Query:', query);
+
+    // Count the total number of documents that match the query
+    const count = await RequirementModel.countDocuments(query);
+    console.log(query.title)
+    // Fetch the filtered, sorted, and paginated requirements from the database
+    const requirements = await RequirementModel.find(query)
+      .limit(parseInt(_end) || 10) // Default to 10 if _end is not provided
+      .skip(parseInt(_start) || 0) // Default to 0 if _start is not provided
+      .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
+      console.log(requirements)
+
+    // Set response headers to include the total count
+    res.header("x-total-count", count);
+    res.header("Access-Control-Expose-Headers", "x-total-count");
+
+    // Send the requirements in the response
+    res.status(200).json(requirements);
+  } catch (error) {
+    // Handle any errors that occur during the database operations
+    console.error('Error fetching requirements:', error);
+    res.status(500).json({ message: 'Failed to fetch requirements', error: error.message });
+  }
+};
+
+
+
 const saveRequirement = async (req, res) => {
   // Extract data from the request body
   const { title, description, propertyType, dealType, phone, askedPrice, location, email } = req.body;
@@ -46,19 +105,6 @@ const saveRequirement = async (req, res) => {
     session.endSession();
     console.error('Error saving requirement:', error);
     res.status(500).json({ message: 'Failed to save requirement', error: error.message });
-  }
-};
-
-const getAllRequirements = async (req, res) => {
-  try {
-    // Fetch all requirements from the database
-    const requirements = await RequirementModel.find();
-
-    // Return the requirements in the response
-    res.status(200).json({ requirements });
-  } catch (error) {
-    console.error('Error fetching requirements:', error);
-    res.status(500).json({ message: 'Failed to fetch requirements', error: error.message });
   }
 };
 
@@ -167,7 +213,7 @@ const getTopLatestRequirements = async (req, res) => {
   }
 };
 
-//
+
 
 
 export { updateRequirement, 
