@@ -201,18 +201,30 @@ const deleteProperty = async (req, res) => {
 const getTopLatestProperties = async (req, res) => {
   try {
     // Fetch the latest 5 properties sorted by creation date in descending order
-    const latestProperties =  await Property.find()
-    .sort({ createdAt: -1 }) // Sort by creation date, newest first
-    .limit(5); // Limit to 5 results
+    const latestProperties = await Property.find()
+      .sort({ createdAt: -1 }) // Sort by creation date, newest first
+      .limit(5); // Limit to 5 results
     
     if (!latestProperties || latestProperties.length === 0) {
       return res.status(404).json({ message: 'No properties found' });
     }
 
-    // console.log("Fetched latest properties:", latestProperties); // Improved logging
+    // Count total properties
+    const totalPropertiesCount = await Property.countDocuments();
 
-    // Return the latest properties in the response
-    res.status(200).json({ properties: latestProperties });
+    // Count commercial properties
+    const commercialPropertiesCount = await Property.countDocuments({ propertyType: 'commercial' });
+
+    // Count apartment properties
+    const apartmentPropertiesCount = await Property.countDocuments({ propertyType: 'apartment' });
+
+    // Return the latest properties and additional counts in the response
+    res.status(200).json({
+      properties: latestProperties,
+      totalPropertiesCount,
+      commercialPropertiesCount,
+      apartmentPropertiesCount
+    });
   } catch (error) {
     console.error('Error fetching latest properties:', error.message);
     res.status(500).json({ message: 'Failed to fetch latest properties', error: error.message });
