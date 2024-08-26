@@ -202,18 +202,22 @@ const getTopLatestRequirements = async (req, res) => {
   try {
     // Fetch the latest 5 requirements sorted by creation date in descending order
     const latestRequirements = await RequirementModel.find()
-    .sort({ createdAt: -1 })
-    .limit(5);
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    // Return the latest requirements in the response
-    res.status(200).json({ requirements: latestRequirements });
+    // Count the total number of requirements
+    const totalRequirementsCount = await RequirementModel.countDocuments();
+
+    // Return the latest requirements and the total count in the response
+    res.status(200).json({ 
+      requirements: latestRequirements,
+      totalRequirementsCount 
+    });
   } catch (error) {
     console.error('Error fetching latest requirements:', error);
     res.status(500).json({ message: 'Failed to fetch latest requirements', error: error.message });
   }
 };
-
-
 
 
 export { updateRequirement, 
