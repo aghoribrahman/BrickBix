@@ -98,9 +98,9 @@ const createProperty = async (req, res) => {
       dealType,
       location,
       price,
+      totalSquareFeet, // Adding the new field
       phone,
       photo: photoUrl.url,
-      totalSquareFeet, // Adding the new field
       creator: user._id,
     });
 
