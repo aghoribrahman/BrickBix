@@ -22,12 +22,10 @@ const getAllProperties = async (req, res) => {
     propertyType = "",
   } = req.query;
 
+  // Initialize an empty query object
   const query = {};
 
-  if (propertyType !== "") {
-    query.propertyType = propertyType;
-  }
-
+  // Apply search filters across the entire dataset
   if (title_like) {
     const regex = new RegExp(title_like, 'i'); // Create a regex for case-insensitive search
     query.$or = [
@@ -36,22 +34,38 @@ const getAllProperties = async (req, res) => {
     ];
   }
 
+  if (propertyType) {
+    query.propertyType = propertyType.toLowerCase(); // Ensure consistent case
+  }
+
   try {
-    const count = await Property.countDocuments({ query });
+    // Count the total number of documents that match the search query
+    const count = await Property.countDocuments(query);
 
+    // Calculate the skip and limit values for pagination
+    const start = parseInt(_start) || 0;
+    const limit = parseInt(_end) ? parseInt(_end) - start : 10; // Calculate limit as difference between _end and _start
+
+    // Fetch the filtered and sorted properties from the database, applying pagination
     const properties = await Property.find(query)
-      .limit(_end)
-      .skip(_start)
-      .sort({ [_sort]: _order });
+      .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
+      .skip(start)   // Skip the first `start` items
+      .limit(limit); // Limit the result to `limit` items
 
+    // Set response headers to include the total count
     res.header("x-total-count", count);
     res.header("Access-Control-Expose-Headers", "x-total-count");
 
+    // Send the paginated properties in the response
     res.status(200).json(properties);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // Handle any errors that occur during the database operations
+    console.error('Error fetching properties:', error);
+    res.status(500).json({ message: 'Failed to fetch properties', error: error.message });
   }
 };
+
+
 
 const getPropertyDetail = async (req, res) => {
   const { id } = req.params;
@@ -203,7 +217,7 @@ const getTopLatestProperties = async (req, res) => {
     // Fetch the latest 5 properties sorted by creation date in descending order
     const latestProperties = await Property.find()
       .sort({ createdAt: -1 }) // Sort by creation date, newest first
-      .limit(5); // Limit to 5 results
+      .limit(3); // Limit to 5 results
     
     if (!latestProperties || latestProperties.length === 0) {
       return res.status(404).json({ message: 'No properties found' });

@@ -4,7 +4,6 @@ import User from '../mongodb/models/user.js';
 
 
 const getAllRequirements = async (req, res) => {
-  // Extract query parameters from the request
   const {
     _end,
     _order,
@@ -17,7 +16,7 @@ const getAllRequirements = async (req, res) => {
   // Initialize an empty query object
   const query = {};
 
-  // Add filters to the query object based on provided parameters
+  // Apply search filters across the entire dataset
   if (title_like) {
     const regex = new RegExp(title_like, 'i'); // Create a regex for case-insensitive search
     query.$or = [
@@ -30,27 +29,25 @@ const getAllRequirements = async (req, res) => {
     query.propertyType = propertyType.toLowerCase(); // Ensure consistent case
   }
 
-
-  console.log(query.title)
   try {
-    // Log the query to verify it's as expected
-    console.log('Query:', query);
-
-    // Count the total number of documents that match the query
+    // Count the total number of documents that match the search query
     const count = await RequirementModel.countDocuments(query);
-    console.log(query.title)
-    // Fetch the filtered, sorted, and paginated requirements from the database
+
+    // Calculate the skip and limit values for pagination
+    const start = parseInt(_start) || 0;
+    const limit = parseInt(_end) || 10;
+
+    // Fetch the filtered and sorted requirements from the database, applying pagination
     const requirements = await RequirementModel.find(query)
-      .limit(parseInt(_end) || 10) // Default to 10 if _end is not provided
-      .skip(parseInt(_start) || 0) // Default to 0 if _start is not provided
       .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
-      console.log(requirements)
+      .skip(start)   // Skip the first `start` items
+      .limit(limit); // Limit the result to `limit` items
 
     // Set response headers to include the total count
     res.header("x-total-count", count);
     res.header("Access-Control-Expose-Headers", "x-total-count");
 
-    // Send the requirements in the response
+    // Send the paginated requirements in the response
     res.status(200).json(requirements);
   } catch (error) {
     // Handle any errors that occur during the database operations
@@ -174,11 +171,8 @@ const deleteRequirement = async (req, res) => {
 const updateRequirement = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, propertyType, dealType, phone, location, askedPrice } =
+    const { title, description, propertyType, dealType, askedPrice, phone, location } =
       req.body;
-
-
-
     await RequirementModel.findByIdAndUpdate(
       { _id: id },
       {
@@ -203,7 +197,7 @@ const getTopLatestRequirements = async (req, res) => {
     // Fetch the latest 5 requirements sorted by creation date in descending order
     const latestRequirements = await RequirementModel.find()
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(3);
 
     // Count the total number of requirements
     const totalRequirementsCount = await RequirementModel.countDocuments();
@@ -218,6 +212,9 @@ const getTopLatestRequirements = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch latest requirements', error: error.message });
   }
 };
+
+
+
 
 
 export { updateRequirement, 
