@@ -35,13 +35,13 @@ const getAllRequirements = async (req, res) => {
 
     // Calculate the skip and limit values for pagination
     const start = parseInt(_start) || 0;
-    const limit = parseInt(_end) || 10;
+    const limit = parseInt(_end) ? parseInt(_end) - start : 10; // Calculate limit as difference between _end and _start
 
     // Fetch the filtered and sorted requirements from the database, applying pagination
     const requirements = await RequirementModel.find(query)
-      .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
-      .skip(start)   // Skip the first `start` items
-      .limit(limit); // Limit the result to `limit` items
+    .sort({ [_sort]: _order })  // Sort the documents by `_sort` field in `_order` direction
+    .skip(start)   // Skip the first `start` items
+    .limit(limit); // Limit the result to `limit` items
 
     // Set response headers to include the total count
     res.header("x-total-count", count);
